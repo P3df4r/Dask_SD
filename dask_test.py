@@ -1,42 +1,36 @@
 import dask.distributed
 import dask
-from Bio.Align.Applications import ClustalwCommandline
-import tempfile
+import dask.config
+import os
 
-client = dask.distributed.Client("tcp://192.168.0.209:8786")
+client = dask.distributed.Client("tcp://10.113.174.131:8786")
 
 def add(a, b):
     x = a + b
     return x
 
-def alinhar(dic):
-    print(tempfile.gettempdir())
-    fasta = open("{}/genomes.fasta".format(dic), "r")
-    print(fasta.read())
-    ClustalwCommandline('clustalw2', infile='', outfile="{}/genomes.fasta".format(dic), type='dna')()
-    pre_result = open("{}/genomes.fasta".format(dic), "r")
-    result = pre_result.read()
-    return result
+def alinhar():
+    os.system("python3 /SPAdes-4.0.0-Linux/bin/spades.py -k 21,33 -1 /tmp/R1.fq.gz -2 /tmp/R2.fq.gz -o teste")
+    os.system("cat teste/contigs.fasta | grep '>' -c")
 
-
-file_user = open("./teste.fasta", "r") 
-file_db = open("./sequence.fasta", "r")
-new_file = open("./genomes.fasta", "w")
-new_file.write(file_user.read() + "\n" + file_db.read())
-loc = client.upload_file("./genomes.fasta")
+temp = '/tmp'
+dask.config.set({'temporary_directory':temp})
+local = []
+#caso precise saber qual o nome da pasta temporaria de cada worker, descomentar até a linha 29
 pre_dic = dict(client.scheduler_info())
-print(pre_dic)
+#print(pre_dic)
+capture_ip = pre_dic['workers']
+#print(capture_ip.keys())
+teste = list(capture_ip.keys())
+for i in teste:
+    local.append(pre_dic['workers'][i]['local_directory'])
+print(local)
 
-
-
-
-dic = pre_dic['workers']['tcp://172.17.0.2:38801']['local_directory']
-exec = client.submit(alinhar, dic)
-#print(exec) #exec guarda o objecto com a função que está sendo executada no worker
-
+client.upload_file("./R1.fq.gz")
+client.upload_file("./R2.fq.gz")
+#exec = client.submit(add, 1, 2)
+exec = client.submit(alinhar)
 print(client.gather(exec)) #captura o resultado
-#resultado = client.gather(exec) #captura o resultado
-#local_result = open("result.fasta", "w")
-#local_result.write(resultado)
+resultado = client.gather(exec) #captura o resultado
 
 client.close()
