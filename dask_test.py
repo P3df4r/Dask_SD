@@ -1,6 +1,6 @@
 import dask.distributed
 import dask
-import dask.config
+import dask.config as config
 import os
 
 client = dask.distributed.Client("tcp://10.113.174.131:8786")
@@ -13,12 +13,11 @@ def alinhar():
     os.system("python3 /SPAdes-4.0.0-Linux/bin/spades.py -k 21,33 -1 /tmp/R1.fq.gz -2 /tmp/R2.fq.gz -o teste")
     os.system("cat teste/contigs.fasta | grep '>' -c")
 
-temp = '/tmp'
-dask.config.set({'temporary_directory':temp})
+config.set({'worker': {'local-directory': '/tmp'}})
 local = []
 #caso precise saber qual o nome da pasta temporaria de cada worker, descomentar até a linha 29
 pre_dic = dict(client.scheduler_info())
-#print(pre_dic)
+print(pre_dic)
 capture_ip = pre_dic['workers']
 #print(capture_ip.keys())
 teste = list(capture_ip.keys())
