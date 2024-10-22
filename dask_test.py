@@ -3,25 +3,14 @@ import dask
 import dask.config
 import os
 
-dask.config.set({'temporary_directory ': '/tmp'})
-
-
-client = dask.distributed.Client("tcp://192.168.0.209:8786")
-teste = dask.config.get('temporary_directory')
-#teste = dask.config.get('visualization.engine')
-print(teste)
-
-
-
-
-
+client = dask.distributed.Client("tcp://172.17.0.2:8786")
 
 def add(a, b):
     x = a + b
     return x
 
 def alinhar():
-    os.system("python3 /SPAdes-4.0.0-Linux/bin/spades.py -k 21,33 -1 /tmp/R1.fq.gz -2 /tmp/R2.fq.gz -o teste")
+    os.system("python3 /SPAdes-4.0.0-Linux/bin/spades.py -k 21,33 -1 R1.fq.gz -2 R2.fq.gz -o teste")
     os.system("cat teste/contigs.fasta | grep '>' -c")
 
 local = []
@@ -35,10 +24,10 @@ for i in teste:
     local.append(pre_dic['workers'][i]['local_directory'])
 print(local)
 
-client.upload_file("./R1.fq.gz")
-client.upload_file("./R2.fq.gz")
+#client.upload_file("./R1.fq.gz")
+#client.upload_file("./R2.fq.gz")
+exec = client.submit(alinhar)
 #exec = client.submit(add, 1, 2)
-exec = client.submit(add, 1, 2)
 print(client.gather(exec)) #captura o resultado
 resultado = client.gather(exec) #captura o resultado
 
