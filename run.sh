@@ -4,7 +4,7 @@ docker run -d -i -p 8786 --name worker2 ubuntu
 docker run -d -i -p 8786 --name worker3 ubuntu
 
 docker start server
-docker inspect server | grep 'IPAdress'
+docker inspect server | grep 'IPAddress'
 echo digite o ip do container
 read ip
 docker cp run_server.sh server:/.
