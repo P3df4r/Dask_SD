@@ -11,6 +11,8 @@ docker cp run_server.sh server:/.
 docker cp dask_test.py server:/.
 docker exec -d server bash run_server.sh
 
+sleep 300
+
 docker start worker1
 docker cp run_worker.sh worker1:/.
 docker exec -d worker1 bash run_worker.sh $ip
