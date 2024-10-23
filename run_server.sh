@@ -1,8 +1,7 @@
 #favor inserir seu ip quando for rodar esse script
-apt update -y
-apt upgrade -y
-apt install python3 -y
-apt install python3-pip -y
-apt install python3-dask -y
-apt install python3-distributed -y
+dnf update -y
+dnf install python3 -y
+dnf install python3-dask.noarch -y
+dnf install python3-dask+distributed.noarch -y
+dnf install python3-bokeh.noarchi -y
 dask scheduler

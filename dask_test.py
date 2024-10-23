@@ -3,7 +3,7 @@ import dask
 import dask.config
 import os
 
-client = dask.distributed.Client("tcp://172.17.0.2:8786")
+client = dask.distributed.Client("tcp://localhost:8786")
 
 def add(a, b):
     x = a + b
